@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class PayloadConvert {
     private boolean async;
-    private String fileType;
+    private String filetype;
     private String key;
-    private String outputType;
+    private String outputtype;
     private String title;
     private String url;
-
+    private String token;
 }

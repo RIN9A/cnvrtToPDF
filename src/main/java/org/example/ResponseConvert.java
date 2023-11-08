@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseConvert {
-    private String fileUrl;
+    private String url;
+    private String fileType;
 
 
 }
