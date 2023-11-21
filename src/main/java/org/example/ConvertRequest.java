@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConvertRequest {
-    private String link;
+    private String url;
     private String inputType;
     private String outputType;
 }

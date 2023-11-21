@@ -52,13 +52,13 @@ public class FileController {
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         JWTutil jwTutil = new JWTutil();
         String fileName = fileStorageService.storeFile(file);
+        System.out.println(fileName);
         String fileType = Objects.requireNonNull(file.getOriginalFilename()).substring(fileName.lastIndexOf(".")).replace(".","");
         String outputType ="pdf";
         String key = UUID.randomUUID().toString();
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(fileName)
+                .path("downloadFile/"+fileName)
                 .toUriString();
-
 
         PayloadConvert payload = new PayloadConvert();
         payload.setAsync(false);
@@ -85,23 +85,24 @@ public class FileController {
 
         ResponseConvert response = postConvertRequest(headerToken,payload);
         String newFileUri = response.getUrl();
-
+        System.out.println(newFileUri);
         String newFileType = "." + response.getFileType();
 
         URL url = new URL(newFileUri);
+        System.out.println(url);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
         InputStream stream = connection.getInputStream();
         if (stream == null) {
             connection.disconnect();
             throw new RuntimeException("Input stream is null");
         }
-        File newFile = fileStorageService.createFile(stream,fileName);
-        String fileDownloadUriNew = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/downloadFile/")
-                    .path(newFile.getName())
-                    .toUriString();
+        File newFile = fileStorageService.createFile(stream,fileName.replace(".","" )+".pdf");
+        String newfileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(newFile.getName())
+                .toUriString();
 
-        return new UploadFileResponse(newFile.getName(), fileDownloadUriNew,
+        return new UploadFileResponse(newFile.getName(), newfileDownloadUri,
                 "application/pdf", file.getSize());
     }
 
@@ -110,13 +111,14 @@ public class FileController {
     private ResponseConvert postConvertRequest(final String token, PayloadConvert body){
         ObjectMapper objectMapper = new ObjectMapper();
         String bodyString = objectMapper.writeValueAsString(body);
+        System.out.println(bodyString);
         ResponseConvert responseConvert = new ResponseConvert("", "");
         URL url = null;
         java.net.HttpURLConnection connection = null;
         InputStream response = null;
         String jsonString = null;
         byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
-        url = new URL(docserviceSite + docServiceUrlConverter);
+        url = new URL("http://172.31.31.84:80/ConvertService.ashx");
         connection = (java.net.HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);

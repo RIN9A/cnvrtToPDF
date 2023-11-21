@@ -52,8 +52,9 @@ public class FileStorageService {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
     }
-    public File createFile( final InputStream stream, String fileName) {
+    public File createFile( final InputStream stream, String fileName) throws IOException {
         Path path = this.fileStorageLocation.resolve(fileName);
+        Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
         File file = null;
         if (Files.exists(fileStorageLocation)) {
             return path.toFile();
