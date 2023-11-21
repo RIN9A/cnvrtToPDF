@@ -95,7 +95,7 @@ public class FileController {
             connection.disconnect();
             throw new RuntimeException("Input stream is null");
         }
-        File newFile = fileStorageService.createFile(stream);
+        File newFile = fileStorageService.createFile(stream,fileName);
         String fileDownloadUriNew = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/downloadFile/")
                     .path(newFile.getName())
@@ -107,7 +107,7 @@ public class FileController {
 
 
     @SneakyThrows
-    private ResponseConvert postConvertRequest(final String token, PayloadConvert body) throws JsonProcessingException {
+    private ResponseConvert postConvertRequest(final String token, PayloadConvert body){
         ObjectMapper objectMapper = new ObjectMapper();
         String bodyString = objectMapper.writeValueAsString(body);
         ResponseConvert responseConvert = new ResponseConvert("", "");
@@ -141,11 +141,10 @@ public class FileController {
         response = connection.getInputStream();  // get the input stream
         jsonString = convertStreamToString(response);
         JSONObject jsonObject = convertStringToJSON(jsonString);
-
-            String respUri = (String) jsonObject.get("fileUrl");
-            String fileType = (String) jsonObject.get("filetype");
-            responseConvert.setUrl(respUri);
-            responseConvert.setFileType(fileType);
+        String respUri = (String) jsonObject.get("fileUrl");
+        String fileType = (String) jsonObject.get("fileType");
+        responseConvert.setUrl(respUri);
+        responseConvert.setFileType(fileType);
 
         connection.disconnect();
         return responseConvert;

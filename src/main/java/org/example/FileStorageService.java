@@ -52,13 +52,14 @@ public class FileStorageService {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
     }
-    public File createFile( final InputStream stream) {
+    public File createFile( final InputStream stream, String fileName) {
+        Path path = this.fileStorageLocation.resolve(fileName);
         File file = null;
         if (Files.exists(fileStorageLocation)) {
-            return file;
+            return path.toFile();
         }
         try {
-             file =  Files.createFile(this.fileStorageLocation).toFile();  // create a new file in the specified path
+            file =  Files.createFile(path).toFile();  // create a new file in the specified path
             try (FileOutputStream out = new FileOutputStream(file)) {
                 int read;
                 final byte[] bytes = new byte[1024];
